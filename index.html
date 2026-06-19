@@ -47,8 +47,9 @@
   #side .sub{margin:12px 0 0;font-size:12px;color:var(--muted);line-height:1.7}
 
   .tabs{display:flex;gap:0;margin:16px 22px 0;border:1px solid var(--gold-line);border-radius:13px;overflow:hidden;background:rgba(7,11,24,.5)}
-  .tabs button{flex:1;background:transparent;border:none;color:var(--muted);
-    padding:11px 6px;font-size:13px;cursor:pointer;font-weight:600;transition:.18s;font-family:inherit}
+  .tabs button{flex:1;min-width:0;background:transparent;border:none;color:var(--muted);
+    padding:11px 4px;font-size:12px;cursor:pointer;font-weight:600;transition:.18s;font-family:inherit;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .tabs button+button{border-inline-start:1px solid var(--hair)}
   .tabs button:hover{color:var(--text)}
   .tabs button.on{color:#1a1304;background:linear-gradient(180deg,var(--gold-soft),var(--gold));font-weight:700}
@@ -78,6 +79,9 @@
   .item .mg{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
   .item .bayer{font-size:11px;color:var(--gold);opacity:.75;direction:ltr}
   #count{font-size:10.5px;color:var(--gold);padding:6px 16px 8px;opacity:.85;font-weight:600}
+  .credit{flex:none;padding:13px 22px;border-top:1px solid var(--gold-line);font-size:11.5px;
+    color:var(--muted);text-align:center;letter-spacing:0}
+  .credit b{color:var(--gold);font-weight:700}
   #list::-webkit-scrollbar{width:8px}
   #list::-webkit-scrollbar-thumb{background:rgba(216,176,106,.25);border-radius:8px}
   #list::-webkit-scrollbar-thumb:hover{background:rgba(216,176,106,.45)}
@@ -129,13 +133,19 @@
 
   #burger{display:none}
   @media(max-width:820px){
-    #side{position:absolute;inset-inline-end:0;top:0;bottom:0;transform:translateX(100%);transition:transform .26s;width:84vw;min-width:0;max-width:340px}
-    [dir=rtl] #side{transform:translateX(100%)}
-    #side.open{transform:none!important}
-    #burger{display:block;position:absolute;top:18px;inset-inline-end:18px;z-index:6;background:rgba(12,18,40,.88);
-      border:1px solid var(--gold-line);color:var(--gold-soft);border-radius:11px;padding:11px 14px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:700}
-    #card{width:auto;inset-inline:14px;bottom:14px}
-    #ctl{max-width:none;inset-inline-start:14px;inset-inline-end:84px}
+    #side{position:fixed;top:0;bottom:0;right:0;left:auto;width:86vw;max-width:360px;min-width:0;
+      transform:translateX(102%);transition:transform .26s;z-index:30}
+    #side.open{transform:translateX(0)}
+    #burger{display:inline-flex;align-items:center;gap:6px;position:fixed;top:12px;right:12px;z-index:40;
+      background:rgba(12,18,40,.92);border:1px solid var(--gold-line);color:var(--gold-soft);
+      border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:700;
+      box-shadow:0 6px 20px -8px #000}
+    /* controls relocate INTO the drawer on mobile (via JS) — nothing floats over the map, so no overlap */
+    #side #ctl{position:static;inset:auto;max-width:none;z-index:auto;margin:14px 22px 0;
+      display:flex;flex-wrap:wrap;gap:8px;overflow:visible}
+    #side #ctl button,#side #ctl select{flex:1 1 auto;white-space:normal;text-align:center}
+    #card{width:auto;left:12px;right:12px;bottom:12px;max-height:58vh;overflow-y:auto;padding:15px 16px}
+    #card h2{font-size:19px}
     .kbd{display:none}
   }
 </style>
@@ -157,7 +167,8 @@
     </header>
     <div class="tabs">
       <button data-cat="star" class="on" id="tabStar">النجوم</button>
-      <button data-cat="dso" id="tabDso">المجرّات والسُّدُم</button>
+      <button data-cat="dso" id="tabDso">مجرّات وسُدُم</button>
+      <button data-cat="sol" id="tabSol">النظام الشمسي</button>
     </div>
     <div class="row">
       <div id="search">
@@ -177,6 +188,7 @@
     </div>
     <div id="count"></div>
     <div id="list"></div>
+    <div class="credit">صُنع بواسطة <b>ly0kha</b> · created by <b>ly0kha</b></div>
   </aside>
 
   <div id="map">
@@ -248,7 +260,7 @@ const STARS = [
  {n:"النَّطْح",b:"β Tau",ra:81.5730,de:28.6075,m:1.65,ly:130,s:"B7 III",c:"الثور",info:"يقع على حدّ كوكبتَي الثور ومُمسِك الأعنّة، ويمثّل طرف قرن الثور الشمالي."},
  {n:"الكَنْز",b:"β Car",ra:138.2999,de:-69.7172,m:1.69,ly:110,s:"A2 IV",c:"القاعدة",info:"نجمٌ أبيض مُزرقّ في قاعدة سفينة القاعدة، قريبٌ من القطب السماوي الجنوبي."},
  {n:"النِّظام",b:"ε Ori",ra:84.0534,de:-1.2019,m:1.69,ly:2000,s:"B0 Ia",c:"الجبّار",info:"النجم الأوسط والأكثر سطوعًا في نطاق الجبّار — عملاقٌ أزرق لامع وبعيد."},
- {n:"النِّطاق",b:"ζ Ori",ra:85.1897,de:-1.9426,m:1.77,ly:1260,s:"O9.5 Ib",c:"الجبّار",info:"النجم الشرقي في نطاق الجبّار. يجاوره سديما رأس الحصان واللهب الشهيران."},
+ {n:"النِّطاق",b:"ζ Ori",ra:85.1897,de:-1.9426,m:1.77,ly:1260,s:"O9.5 Ib",c:"الجبّار",info:"النجم الشرقي في نطاق الجبّار. يجاوره سديما رأس الحصان الشهيران."},
  {n:"الجَوْن",b:"ε UMa",ra:193.5073,de:55.9598,m:1.76,ly:81,s:"A1 III",c:"الدُّبّ الأكبر",info:"ألمع نجوم الدُّبّ الأكبر، نجمٌ كيميائيّ غريب يتغيّر تركيب سطحه مع دورانه."},
  {n:"الدُّبّ (الظَّهْر)",b:"α UMa",ra:165.9320,de:61.7510,m:1.79,ly:124,s:"K0 III",c:"الدُّبّ الأكبر",info:"أحد «النجمَين الدليلَين» في كأس الدُّبّ الأكبر اللذين يستقيمان للإشارة إلى النجم القطبي."},
  {n:"المِرفَق",b:"α Per",ra:51.0807,de:49.8612,m:1.79,ly:510,s:"F5 Ib",c:"برشاوش",info:"ألمع نجوم برشاوش، عملاقٌ أصفر لامع يقع داخل عنقودٍ نجميّ متناثر."},
@@ -317,7 +329,7 @@ const DSO = [
  {n:"سديم النَّسر",b:"M16 · NGC 6611",ra:274.7000,de:-13.8067,m:6.0,ly:7000,t:"سديم انبعاثي",c:"الحيّة",fz:1,info:"موطن «أعمدة الخلق» الشهيرة التي صوّرها هابل — أعمدة هائلة من الغاز تُولد فيها النجوم."},
  {n:"السديم الحلقي",b:"M57 · NGC 6720",ra:283.3963,de:33.0292,m:8.8,ly:2300,t:"سديم كوكبي",c:"الشَّلْياق",fz:0.6,info:"حلقةٌ دخانية متوهّجة نفثها نجمٌ شبيه بالشمس وهو يحتضر، ومن أحبّ السُّدُم الكوكبية إلى هواة التلسكوبات."},
  {n:"سديم الدمبل",b:"M27 · NGC 6853",ra:299.9015,de:22.7211,m:7.5,ly:1200,t:"سديم كوكبي",c:"الثعلب",fz:0.8,info:"أول سديمٍ كوكبيّ يُكتشف على الإطلاق، ساعةٌ رمليّة من الغاز المتوهّج في كوكبة الثعلب الصغيرة."},
- {n:"السديم الحلزوني",b:"NGC 7293",ra:337.4108,de:-20.8372,m:7.6,ly:650,t:"سديم كوكبي",c:"الدَّلْو",fz:1,info:"من أقرب السُّدُم الكوكبية إلى الأرض، أكسبه شكله الحلقيّ الشبيه بالعين لقب «عين الله»."},
+ {n:"السديم الحلزوني",b:"NGC 7293",ra:337.4108,de:-20.8372,m:7.6,ly:650,t:"سديم كوكبي",c:"الدَّلْو",fz:1,info:"من أقرب السُّدُم الكوكبية إلى الأرض، أكسبه شكله الحلقيّ الشبيه بالعين لقب «عين."},
  {n:"سديم السرطان",b:"M1 · NGC 1952",ra:83.6332,de:22.0145,m:8.4,ly:6500,t:"بقايا مستعر أعظم",c:"الثور",fz:0.8,info:"حطامٌ متمدّد لمستعرٍ أعظم سجّل الفلكيون الصينيون انفجاره عام ١٠٥٤م، وفي قلبه نجمٌ نيوتروني سريع الدوران."},
  {n:"الثُّرَيّا",b:"M45 · الأخوات السبع",ra:56.8711,de:24.1053,m:1.6,ly:444,t:"عنقود مفتوح",c:"الثور",fz:3,info:"«الثُّرَيّا»، عنقودٌ فتيّ مبهر من نجومٍ زرقاء حارّة يكتنفه سديمٌ انعكاسيّ أزرق رقيق."},
  {n:"الحَيادِس (القلائص)",b:"Caldwell 41",ra:66.7500,de:15.8700,m:0.5,ly:153,t:"عنقود مفتوح",c:"الثور",fz:7,info:"أقرب عنقودٍ نجميّ مفتوح إلى الشمس، تشكّل ألمع نجومه وجه الثور على هيئة الحرف V."},
@@ -360,7 +372,62 @@ function fmtRA(deg){const h=deg/15,hh=Math.floor(h),mm=Math.floor((h-hh)*60),ss=
 function fmtDec(deg){const sign=deg<0?"−":"+";const a=Math.abs(deg),d=Math.floor(a),m=Math.round((a-d)*60);
   return `${sign}${ar(d)}° ${ar(m)}′`;}
 
-let aladin, starCat, dsoCat, figOverlay, linesOn=false;
+// ===== النظام الشمسي — حساب موضع الشمس والقمر والكواكب لحظيًّا للوقت الحالي =====
+const D2R=Math.PI/180, R2D=180/Math.PI;
+function rev(x){ x%=360; return x<0?x+360:x; }
+function solarPositions(){
+  const d = Date.now()/86400000 - 10956.0;            // أيام منذ 2000 يناير 0.0 (UT)
+  const ecl = (23.4393 - 3.563e-7*d)*D2R;
+  // الشمس
+  const ws=282.9404+4.70935e-5*d, es=0.016709-1.151e-9*d, Ms=rev(356.0470+0.9856002585*d);
+  let Es=Ms+R2D*es*Math.sin(Ms*D2R)*(1+es*Math.cos(Ms*D2R));
+  const xs=Math.cos(Es*D2R)-es, ys=Math.sin(Es*D2R)*Math.sqrt(1-es*es);
+  const rs=Math.sqrt(xs*xs+ys*ys), vs=R2D*Math.atan2(ys,xs), lonsun=rev(vs+ws);
+  const xsun=rs*Math.cos(lonsun*D2R), ysun=rs*Math.sin(lonsun*D2R);
+  function eq(xg,yg,zg){ const xe=xg, ye=yg*Math.cos(ecl)-zg*Math.sin(ecl), ze=yg*Math.sin(ecl)+zg*Math.cos(ecl);
+    return {ra:rev(R2D*Math.atan2(ye,xe)), de:R2D*Math.atan2(ze,Math.sqrt(xe*xe+ye*ye))}; }
+  function orbit(N,i,w,a,e,M,geo){
+    N=rev(N); w=rev(w); M=rev(M);
+    let E=M+R2D*e*Math.sin(M*D2R)*(1+e*Math.cos(M*D2R));
+    for(let k=0;k<4;k++){ E=E-(E-R2D*e*Math.sin(E*D2R)-M)/(1-e*Math.cos(E*D2R)); }
+    const xv=a*(Math.cos(E*D2R)-e), yv=a*Math.sqrt(1-e*e)*Math.sin(E*D2R);
+    const v=R2D*Math.atan2(yv,xv), r=Math.sqrt(xv*xv+yv*yv);
+    const Nr=N*D2R, ir=i*D2R, vw=(v+w)*D2R;
+    const xh=r*(Math.cos(Nr)*Math.cos(vw)-Math.sin(Nr)*Math.sin(vw)*Math.cos(ir));
+    const yh=r*(Math.sin(Nr)*Math.cos(vw)+Math.cos(Nr)*Math.sin(vw)*Math.cos(ir));
+    const zh=r*(Math.sin(vw)*Math.sin(ir));
+    return geo ? eq(xh,yh,zh) : eq(xh+xsun, yh+ysun, zh);
+  }
+  return {
+    sun: eq(xsun,ysun,0),
+    moon: orbit(125.1228-0.0529538083*d,5.1454,318.0634+0.1643573223*d,60.2666,0.054900,115.3654+13.0649929509*d,true),
+    mercury: orbit(48.3313+3.24587e-5*d,7.0047+5.00e-8*d,29.1241+1.01444e-5*d,0.387098,0.205635+5.59e-10*d,168.6562+4.0923344368*d,false),
+    venus: orbit(76.6799+2.46590e-5*d,3.3946+2.75e-8*d,54.8910+1.38374e-5*d,0.723330,0.006773-1.302e-9*d,48.0052+1.6021302244*d,false),
+    mars: orbit(49.5574+2.11081e-5*d,1.8497-1.78e-8*d,286.5016+2.92961e-5*d,1.523688,0.093405+2.516e-9*d,18.6021+0.5240207766*d,false),
+    jupiter: orbit(100.4542+2.76854e-5*d,1.3030-1.557e-7*d,273.8777+1.64505e-5*d,5.20256,0.048498+4.469e-9*d,19.8950+0.0830853001*d,false),
+    saturn: orbit(113.6634+2.38980e-5*d,2.4886-1.081e-7*d,339.3939+2.97661e-5*d,9.55475,0.055546-9.499e-9*d,316.9670+0.0334442282*d,false),
+    uranus: orbit(74.0005+1.3978e-5*d,0.7733+1.9e-8*d,96.6612+3.0565e-5*d,19.18171-1.55e-8*d,0.047318+7.45e-9*d,142.5905+0.011725806*d,false),
+    neptune: orbit(131.7806+3.0173e-5*d,1.7700-2.55e-7*d,272.8461-6.027e-6*d,30.05826+3.313e-8*d,0.008606+2.15e-9*d,259.6072+0.005995147*d,false)
+  };
+}
+let SOLAR=[];
+function buildSolar(){
+  const p=solarPositions();
+  const defs=[
+   {k:"sun",n:"الشمس",b:"Sun",m:-26.7,col:"#ffd45a",dStr:"١٤٩٫٦ مليون كم",t:"نجمنا (قزمٌ أصفر)",fz:3,info:"نجمنا، قزمٌ أصفر تدور حوله الأرض وبقيّة الكواكب، ومصدر الضوء والحرارة للحياة. لا تنظر إليه مباشرةً أبدًا!"},
+   {k:"moon",n:"القمر",b:"Moon",m:-12.7,col:"#dde1ea",dStr:"٣٨٤٬٤٠٠ كم",t:"قمر الأرض",fz:1.5,info:"قمر الأرض الوحيد وأقرب جِرمٍ سماويّ إلينا، يضيء ليلنا بانعكاس ضوء الشمس ويتحكّم في المدّ والجزر."},
+   {k:"mercury",n:"عُطارد",b:"Mercury",m:-0.2,col:"#b9a589",dStr:"٥٧٫٩ مليون كم من الشمس",t:"كوكب صخريّ",fz:1,info:"أصغر كواكب المجموعة وأقربها إلى الشمس، عالمٌ صخريّ محروق بلا غلافٍ جويّ يُذكر."},
+   {k:"venus",n:"الزُّهَرة",b:"Venus",m:-4.4,col:"#f4dca0",dStr:"١٠٨ مليون كم من الشمس",t:"كوكب صخريّ",fz:1,info:"«توأم الأرض» في الحجم، لكنّه أحرّ الكواكب بغلافٍ خانق من ثاني أكسيد الكربون، وألمع جِرمٍ بعد الشمس والقمر."},
+   {k:"mars",n:"المرّيخ",b:"Mars",m:0.7,col:"#ff7a4d",dStr:"٢٢٨ مليون كم من الشمس",t:"كوكب صخريّ",fz:1,info:"«الكوكب الأحمر»، عالمٌ صحراويّ بارد يحمل أعلى بركان وأكبر وادٍ في المجموعة، وهدفٌ رئيس للبحث عن الحياة."},
+   {k:"jupiter",n:"المُشتري",b:"Jupiter",m:-2.2,col:"#e3c08f",dStr:"٧٧٨ مليون كم من الشمس",t:"عملاقٌ غازيّ",fz:1,info:"أضخم كواكب المجموعة، عملاقٌ غازيّ تدور حوله عشرات الأقمار وتعصف به بقعةٌ حمراء أكبر من الأرض."},
+   {k:"saturn",n:"زُحَل",b:"Saturn",m:0.7,col:"#ecd9a6",dStr:"١٫٤ مليار كم من الشمس",t:"عملاقٌ غازيّ",fz:1,info:"عملاقٌ غازيّ مزيّن بأبهى نظام حلقاتٍ في المجموعة، وكثافته أقلّ من كثافة الماء."},
+   {k:"uranus",n:"أورانوس",b:"Uranus",m:5.7,col:"#9fe6ef",dStr:"٢٫٩ مليار كم من الشمس",t:"عملاقٌ جليديّ",fz:1,info:"عملاقٌ جليديّ مائلٌ على جنبه يدور وهو شبه مستلقٍ، ذو لونٍ أزرق-سماويّ."},
+   {k:"neptune",n:"نبتون",b:"Neptune",m:7.8,col:"#6f8cff",dStr:"٤٫٥ مليار كم من الشمس",t:"عملاقٌ جليديّ",fz:1,info:"أبعد كواكب المجموعة، عملاقٌ جليديّ أزرق تهبّ فيه أعنف رياحٍ في النظام الشمسي."}
+  ];
+  SOLAR = defs.map(o=>({...o, ra:p[o.k].ra, de:p[o.k].de, c:"على مسار البروج"}));
+}
+
+let aladin, starCat, dsoCat, solCat, starLbl, dsoLbl, solLbl, figOverlay, linesOn=false, labelsShown=false;
 let cat="star", current=null, view=[];
 let surveyMode="auto", activeSurvey="";
 const SMOOTH="P/Mellinger/color", DEEP="P/DSS2/color", FOV_SWITCH=18;
@@ -376,14 +443,29 @@ A.init.then(()=>{
   });
   $("load").style.display="none";
 
-  starCat = A.catalog({name:"النجوم", shape:"circle", sourceSize:8, color:"#ffe8a8",
+  // marker dots (always visible) + separate label layers (shown only when zoomed in, to avoid clutter)
+  starCat = A.catalog({name:"النجوم", shape:"circle", sourceSize:8, color:"#ffe8a8"});
+  dsoCat  = A.catalog({name:"المجرّات والسُّدُم", shape:"square", sourceSize:11, color:"#7ce6bf"});
+  starLbl = A.catalog({name:"أسماء النجوم", shape:"circle", sourceSize:0, color:"rgba(0,0,0,0)",
     displayLabel:true, labelColumn:"name", labelColor:"#fffbe8", labelFont:"600 14px Cairo, sans-serif"});
-  dsoCat = A.catalog({name:"المجرّات والسُّدُم", shape:"square", sourceSize:11, color:"#7ce6bf",
+  dsoLbl  = A.catalog({name:"أسماء الأجرام", shape:"circle", sourceSize:0, color:"rgba(0,0,0,0)",
     displayLabel:true, labelColumn:"name", labelColor:"#c6ffe9", labelFont:"600 14px Cairo, sans-serif"});
-  aladin.addCatalog(starCat); aladin.addCatalog(dsoCat);
+  aladin.addCatalog(starCat); aladin.addCatalog(dsoCat); aladin.addCatalog(starLbl); aladin.addCatalog(dsoLbl);
 
-  STARS.forEach((s,i)=>{ byName[s.n]={kind:"star",i}; starCat.addSources([A.source(s.ra,s.de,{name:s.n})]); });
-  DSO.forEach((s,i)=>{ byName[s.n]={kind:"dso",i}; dsoCat.addSources([A.source(s.ra,s.de,{name:s.n})]); });
+  STARS.forEach((s,i)=>{ byName[s.n]={kind:"star",i};
+    starCat.addSources([A.source(s.ra,s.de,{name:s.n})]); starLbl.addSources([A.source(s.ra,s.de,{name:s.n})]); });
+  DSO.forEach((s,i)=>{ byName[s.n]={kind:"dso",i};
+    dsoCat.addSources([A.source(s.ra,s.de,{name:s.n})]); dsoLbl.addSources([A.source(s.ra,s.de,{name:s.n})]); });
+
+  buildSolar();
+  solCat = A.catalog({name:"النظام الشمسي", shape:"circle", sourceSize:12, color:"#ffcf7a"});
+  solLbl = A.catalog({name:"أسماء النظام الشمسي", shape:"circle", sourceSize:0, color:"rgba(0,0,0,0)",
+    displayLabel:true, labelColumn:"name", labelColor:"#ffe2b0", labelFont:"700 14px Cairo, sans-serif"});
+  aladin.addCatalog(solCat); aladin.addCatalog(solLbl);
+  SOLAR.forEach((s,i)=>{ byName[s.n]={kind:"sol",i};
+    solCat.addSources([A.source(s.ra,s.de,{name:s.n})]); solLbl.addSources([A.source(s.ra,s.de,{name:s.n})]); });
+
+  try{ starLbl.hide(); dsoLbl.hide(); solLbl.hide(); }catch(e){}
 
   try{ aladin.on("objectClicked",o=>{ if(o&&o.data&&byName[o.data.name]){const r=byName[o.data.name]; goObj(r.kind,r.i);} }); }catch(e){}
 
@@ -396,8 +478,18 @@ A.init.then(()=>{
 
   activeSurvey=SMOOTH;
   buildList();
-  setInterval(autoSurvey, 500);
+  setInterval(()=>{ autoSurvey(); updateLabels(); }, 400);
+  window.addEventListener("orientationchange",()=>setTimeout(()=>{try{aladin.setFov(aladin.getFov()[0]);}catch(e){}},300));
 });
+
+// Show name labels only when zoomed in enough — keeps the wide sky clean and readable
+function updateLabels(){
+  if(!aladin) return;
+  let fov; try{ fov=aladin.getFov()[0]; }catch(e){ return; }
+  const show = fov<=55;
+  if(show!==labelsShown){ labelsShown=show;
+    try{ if(show){ starLbl.show(); dsoLbl.show(); solLbl.show(); } else { starLbl.hide(); dsoLbl.hide(); solLbl.hide(); } }catch(e){} }
+}
 
 function autoSurvey(){
   if(surveyMode!=="auto"||!aladin) return;
@@ -406,7 +498,7 @@ function autoSurvey(){
   if(want!==activeSurvey){ activeSurvey=want; setSurvey(want); }
 }
 function setSurvey(id){ try{ aladin.setImageSurvey(id);}catch(e){ try{ aladin.setBaseImageLayer(id);}catch(e2){} } }
-function data(kind){ return kind==="dso"?DSO:STARS; }
+function data(kind){ return kind==="dso"?DSO : kind==="sol"?SOLAR : STARS; }
 
 function buildList(){
   const arrSrc=data(cat), f=$("q").value.trim(), sort=$("sort").value, maxMag=parseFloat($("mag").value);
@@ -414,18 +506,19 @@ function buildList(){
   let arr=arrSrc.map((s,i)=>({s,i}))
     .filter(({s})=> cat!=="star" || s.m<=maxMag+1e-9)
     .filter(({s})=>!f || s.n.includes(f)||s.c.includes(f)||(s.t||"").includes(f)||(s.b||"").toLowerCase().includes(f.toLowerCase()));
-  arr.sort((a,b)=> sort==="mag"? a.s.m-b.s.m : sort==="dist"? a.s.ly-b.s.ly : a.s.n.localeCompare(b.s.n,"ar"));
+  arr.sort((a,b)=> sort==="mag"? a.s.m-b.s.m : sort==="dist"? (a.s.ly||0)-(b.s.ly||0) : a.s.n.localeCompare(b.s.n,"ar"));
   view=arr.map(o=>({kind:cat,i:o.i}));
 
   const L=$("list"); L.innerHTML="";
   arr.forEach(({s,i})=>{
-    const isStar=cat==="star", col=isStar?starColor(s.s):"#79c8aa";
+    const col = cat==="star"?starColor(s.s) : cat==="sol"? s.col : "#79c8aa";
+    const round = cat!=="dso";
     const active=current&&current.kind===cat&&current.i===i;
     const el=document.createElement("div");
     el.className="item"+(active?" active":""); el.dataset.i=i;
-    el.innerHTML=`<span class="dot ${isStar?'':'sq'}" style="color:${col};background:${col}"></span>
+    el.innerHTML=`<span class="dot ${round?'':'sq'}" style="color:${col};background:${col}"></span>
       <span class="nm">${s.n}</span><span class="bayer">${s.b.split(" ")[0]}</span>
-      <span class="mg">${fmtMag(s.m,isStar)}</span>`;
+      <span class="mg">${fmtMag(s.m,cat==="star")}</span>`;
     el.onclick=()=>goObj(cat,i);
     L.appendChild(el);
   });
@@ -441,15 +534,19 @@ function goObj(kind,i){
   const anim=setInterval(()=>{ fov=fov-(fov-target)*0.25; aladin.setFov(fov);
     if(fov-target<target*0.04){clearInterval(anim); aladin.setFov(target);} },28);
 
-  const isStar=kind==="star", col=isStar?starColor(s.s):"#79c8aa";
-  $("cDot").style.background=col; $("cDot").style.color=col; $("cDot").style.borderRadius=isStar?"50%":"3px";
+  const isStar=kind==="star";
+  const col = isStar?starColor(s.s) : kind==="sol"? s.col : "#79c8aa";
+  $("cDot").style.background=col; $("cDot").style.color=col; $("cDot").style.borderRadius=(kind==="dso")?"3px":"50%";
   $("cName").textContent=s.n; $("cDesig").textContent=s.b;
-  $("cDist").textContent=fmtDist(s.ly); $("cMag").textContent=fmtMag(s.m,isStar);
+  $("cDist").textContent = s.dStr ? s.dStr : fmtDist(s.ly);
+  $("cMag").textContent=fmtMag(s.m,isStar);
   $("lbl3").textContent=isStar?"النوع الطيفي":"نوع الجِرم";
   $("cSpec").textContent=isStar?s.s:s.t;
   $("cCon").textContent=s.c; $("cRA").textContent=fmtRA(s.ra); $("cDec").textContent=fmtDec(s.de);
   $("cDesc").textContent=s.info||"";
-  $("cHint").textContent="صورةٌ فلكية حقيقية لهذه المنطقة — مرّر للتكبير، واسحب للتنقّل.";
+  $("cHint").textContent = kind==="sol"
+    ? "الموضع محسوبٌ لحظيًّا لوقتك الحالي. الكواكب لا تظهر في صور المسح الثابتة، لكنّ المؤشّر يحدّد مكانها الآن بين النجوم."
+    : "صورةٌ فلكية حقيقية لهذه المنطقة — مرّر للتكبير، واسحب للتنقّل.";
   $("card").classList.add("show");
   if(window.innerWidth<=820) $("side").classList.remove("open");
 }
@@ -462,10 +559,11 @@ function step(dir){ if(!view.length) return;
   goObj(view[pos].kind, view[pos].i); }
 
 function switchTab(c){ cat=c; $("tabStar").classList.toggle("on",c==="star"); $("tabDso").classList.toggle("on",c==="dso");
-  buildList(); markActive(); }
+  $("tabSol").classList.toggle("on",c==="sol"); buildList(); markActive(); }
 
 $("tabStar").onclick=()=>switchTab("star");
 $("tabDso").onclick=()=>switchTab("dso");
+$("tabSol").onclick=()=>switchTab("sol");
 $("q").addEventListener("input",buildList);
 $("sort").addEventListener("change",buildList);
 $("mag").addEventListener("input",()=>{ $("magval").textContent="القدر "+ar(parseFloat($("mag").value).toFixed(1)); buildList(); });
@@ -483,6 +581,13 @@ $("lines").onclick=()=>{ linesOn=!linesOn; try{ linesOn?figOverlay.show():figOve
 $("full").onclick=()=>{ const el=document.documentElement;
   if(!document.fullscreenElement){ el.requestFullscreen&&el.requestFullscreen(); } else { document.exitFullscreen&&document.exitFullscreen(); } };
 $("burger").onclick=()=>$("side").classList.toggle("open");
+
+// On phones, move the map controls INTO the slide-out drawer so nothing floats over (and overlaps) the map.
+function placeControls(){ const ctl=$("ctl");
+  if(window.matchMedia("(max-width:820px)").matches){ if(ctl.parentElement!==$("side")) $("side").insertBefore(ctl,$("count")); }
+  else { if(ctl.parentElement!==$("map")) $("map").appendChild(ctl); } }
+placeControls();
+window.addEventListener("resize", placeControls);
 document.addEventListener("keydown",e=>{
   if(e.target.tagName==="INPUT") return;
   if(e.key==="ArrowLeft"){step(1);e.preventDefault();}

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<title>أطلس السماء — النجوم والمجرّات والسُّدُم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#070b18; --ink2:#0b1226; --panel:#0e1530; --panel2:#121a38;
+    --gold:#d8b06a; --gold-soft:#f0d59c; --gold-line:rgba(216,176,106,.30);
+    --hair:rgba(216,176,106,.16);
+    --text:#f3efe3; --muted:#a6abc4; --jade:#79c8aa;
+    --shadow:0 18px 50px -20px rgba(0,0,0,.85);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;height:100%;color:var(--text);overflow:hidden;overscroll-behavior:none;
+    font-family:"Cairo",system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:
+      radial-gradient(900px 600px at 18% -8%, #16213f 0%, transparent 60%),
+      radial-gradient(1100px 700px at 92% 110%, #121b34 0%, transparent 55%),
+      linear-gradient(180deg, var(--ink2), var(--ink))}
+  #app{display:flex;height:100vh;height:100dvh;width:100vw}
+  ::selection{background:rgba(216,176,106,.3)}
+
+  /* hide Aladin "powered by" logo / credit */
+  .aladin-logo-container,.aladin-logo,a.aladin-logo,.aladin-logo-tooltip{display:none!important}
+
+  /* ===== Sidebar (right in RTL) ===== */
+  #side{width:360px;min-width:360px;height:100%;position:relative;z-index:5;display:flex;flex-direction:column;
+    background:linear-gradient(180deg,#0d1430 0%,#090e20 100%);
+    border-inline-start:1px solid var(--gold-line);
+    box-shadow:-1px 0 0 rgba(255,255,255,.02), var(--shadow)}
+  #side header{padding:22px 22px 14px;position:relative}
+  #side header::after{content:"";position:absolute;left:22px;right:22px;bottom:0;height:1px;
+    background:linear-gradient(90deg,transparent,var(--gold-line),transparent)}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand .glyph{width:34px;height:34px;flex:none;color:var(--gold);filter:drop-shadow(0 0 10px rgba(216,176,106,.45))}
+  #side h1{margin:0;font-size:23px;font-weight:900;line-height:1.1}
+  #side h1 b{color:var(--gold);font-weight:900}
+  .kicker{font-size:10.5px;color:var(--gold);font-weight:600;letter-spacing:0;margin-bottom:2px;opacity:.9}
+  #side .sub{margin:12px 0 0;font-size:12px;color:var(--muted);line-height:1.7}
+
+  .tabs{display:flex;gap:0;margin:16px 22px 0;border:1px solid var(--gold-line);border-radius:13px;overflow:hidden;background:rgba(7,11,24,.5)}
+  .tabs button{flex:1;background:transparent;border:none;color:var(--muted);
+    padding:11px 6px;font-size:13px;cursor:pointer;font-weight:600;transition:.18s;font-family:inherit}
+  .tabs button+button{border-inline-start:1px solid var(--hair)}
+  .tabs button:hover{color:var(--text)}
+  .tabs button.on{color:#1a1304;background:linear-gradient(180deg,var(--gold-soft),var(--gold));font-weight:700}
+
+  .row{display:flex;gap:9px;margin:14px 22px 0}
+  #search{flex:1;display:flex;align-items:center;gap:9px;background:rgba(7,11,24,.55);
+    border:1px solid var(--hair);border-radius:12px;padding:10px 12px;transition:border-color .18s}
+  #search:focus-within{border-color:var(--gold-line)}
+  #search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:13.5px;min-width:0;font-family:inherit}
+  #search svg{flex:none;color:var(--gold);opacity:.7}
+  select{background:rgba(7,11,24,.55);border:1px solid var(--hair);color:var(--text);border-radius:12px;
+    padding:9px;font-size:12.5px;outline:none;cursor:pointer;font-family:inherit}
+  select:hover{border-color:var(--gold-line)}
+  .magrow{display:flex;align-items:center;gap:10px;margin:13px 22px 2px;font-size:11.5px;color:var(--muted)}
+  .magrow input[type=range]{flex:1;accent-color:var(--gold)}
+  #magval{min-width:78px;text-align:start;color:var(--gold-soft);font-weight:600}
+
+  #list{flex:1;overflow-y:auto;padding:8px 14px 22px}
+  .item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;cursor:pointer;
+    border:1px solid transparent;transition:background .14s,border-color .14s,transform .14s}
+  .item:hover{background:rgba(216,176,106,.07);transform:translateX(-3px)}
+  .item.active{background:rgba(216,176,106,.10);border-color:var(--gold-line);
+    box-shadow:inset -2px 0 0 0 var(--gold)}
+  .dot{width:13px;height:13px;border-radius:50%;flex:none;box-shadow:0 0 11px currentColor}
+  .sq{border-radius:3px}
+  .item .nm{font-size:14.5px;font-weight:600;flex:1}
+  .item .mg{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .item .bayer{font-size:11px;color:var(--gold);opacity:.75;direction:ltr}
+  #count{font-size:10.5px;color:var(--gold);padding:6px 16px 8px;opacity:.85;font-weight:600}
+  #list::-webkit-scrollbar{width:8px}
+  #list::-webkit-scrollbar-thumb{background:rgba(216,176,106,.25);border-radius:8px}
+  #list::-webkit-scrollbar-thumb:hover{background:rgba(216,176,106,.45)}
+
+  /* ===== Map ===== */
+  #map{flex:1;position:relative}
+  #aladin-lite-div{position:absolute;inset:0}
+  .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:16px;color:var(--muted);font-size:13px;z-index:2;
+    background:radial-gradient(circle at 50% 42%,#101a3a,#070b18)}
+  .spin{width:38px;height:38px;border:3px solid rgba(216,176,106,.2);border-top-color:var(--gold);
+    border-radius:50%;animation:sp 1s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* ===== Info card ===== */
+  #card{position:absolute;inset-inline-start:22px;bottom:22px;width:360px;max-width:calc(100% - 44px);
+    background:linear-gradient(180deg,#101736,#0c1228);border:1px solid var(--gold-line);
+    border-radius:18px;padding:18px 20px;z-index:4;opacity:0;transform:translateY(10px) scale(.985);
+    transition:opacity .22s,transform .22s;pointer-events:none;box-shadow:var(--shadow)}
+  #card::before{content:"";position:absolute;inset:5px;border:1px solid var(--hair);border-radius:13px;pointer-events:none}
+  #card.show{opacity:1;transform:none;pointer-events:auto}
+  #card .top{display:flex;align-items:center;gap:13px;margin-bottom:14px;position:relative}
+  #card .top .dot{width:20px;height:20px}
+  #card h2{margin:0;font-size:22px;font-weight:900}
+  #card .desig{font-size:12px;color:var(--gold);opacity:.85;margin-top:2px;direction:ltr;text-align:start}
+  #card .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;font-size:13.5px}
+  #card .grid div span{color:var(--muted);display:block;font-size:10px;margin-bottom:2px}
+  #card .grid div b{font-weight:700}
+  #card .num{font-variant-numeric:tabular-nums}
+  #card .close{position:absolute;top:13px;inset-inline-end:15px;cursor:pointer;color:var(--muted);font-size:20px;line-height:1;transition:.15s}
+  #card .close:hover{color:var(--gold)}
+  #card .nav{position:absolute;top:12px;inset-inline-end:42px;display:flex;gap:6px}
+  #card .nav button{background:rgba(7,11,24,.6);border:1px solid var(--hair);color:var(--text);border-radius:8px;
+    width:26px;height:24px;cursor:pointer;font-size:14px;line-height:1;transition:.15s}
+  #card .nav button:hover{border-color:var(--gold-line);color:var(--gold)}
+  #card .desc{margin:15px 0 0;font-size:13px;color:#e4e0d2;line-height:1.85;
+    border-top:1px solid var(--hair);padding-top:13px}
+  #card .hint{margin-top:10px;font-size:10.5px;color:var(--muted);line-height:1.6;opacity:.8}
+
+  /* ===== Top controls ===== */
+  #ctl{position:absolute;top:18px;inset-inline-start:18px;z-index:4;display:flex;gap:9px;flex-wrap:wrap;max-width:62%}
+  #ctl button,#ctl select{background:rgba(12,18,40,.86);border:1px solid var(--gold-line);color:var(--text);
+    border-radius:11px;padding:9px 14px;font-size:12.5px;cursor:pointer;transition:.15s;font-family:inherit;font-weight:600}
+  #ctl button:hover,#ctl select:hover{border-color:var(--gold);background:rgba(216,176,106,.14);color:var(--gold-soft)}
+  #ctl button.on{background:linear-gradient(180deg,var(--gold-soft),var(--gold));color:#1a1304;border-color:var(--gold)}
+  .kbd{position:absolute;bottom:18px;inset-inline-end:18px;z-index:4;font-size:10.5px;color:var(--muted);
+    background:rgba(12,18,40,.8);border:1px solid var(--hair);border-radius:10px;padding:8px 12px}
+  .kbd b{color:var(--gold);font-weight:700}
+
+  #burger{display:none}
+  @media(max-width:820px){
+    #side{position:absolute;inset-inline-end:0;top:0;bottom:0;transform:translateX(100%);transition:transform .26s;width:84vw;min-width:0;max-width:340px}
+    [dir=rtl] #side{transform:translateX(100%)}
+    #side.open{transform:none!important}
+    #burger{display:block;position:absolute;top:18px;inset-inline-end:18px;z-index:6;background:rgba(12,18,40,.88);
+      border:1px solid var(--gold-line);color:var(--gold-soft);border-radius:11px;padding:11px 14px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:700}
+    #card{width:auto;inset-inline:14px;bottom:14px}
+    #ctl{max-width:none;inset-inline-start:14px;inset-inline-end:84px}
+    .kbd{display:none}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <button id="burger">☰ القائمة</button>
+  <aside id="side">
+    <header>
+      <div class="kicker">أطلس فلكيّ تفاعليّ</div>
+      <div class="brand">
+        <svg class="glyph" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
+          <path d="M50 2 L58 38 L94 30 L64 50 L94 70 L58 62 L50 98 L42 62 L6 70 L36 50 L6 30 L42 38 Z"/>
+          <circle cx="50" cy="50" r="6" fill="#0d1430"/>
+        </svg>
+        <h1>أطلس <b>السماء</b></h1>
+      </div>
+      <p class="sub">ألمع النجوم المُسمّاة والمجرّات والسُّدُم والعناقيد النجمية، معروضةً فوق صورٍ فلكية حقيقية. انقر أيّ جِرمٍ لتنتقل إليه وتُكبّر على صورته الحقيقية.</p>
+    </header>
+    <div class="tabs">
+      <button data-cat="star" class="on" id="tabStar">النجوم</button>
+      <button data-cat="dso" id="tabDso">المجرّات والسُّدُم</button>
+    </div>
+    <div class="row">
+      <div id="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="q" placeholder="ابحث عن نجم أو كوكبة…" autocomplete="off"/>
+      </div>
+      <select id="sort" title="ترتيب">
+        <option value="mag">حسب اللمعان</option>
+        <option value="dist">حسب المسافة</option>
+        <option value="name">حسب الاسم</option>
+      </select>
+    </div>
+    <div class="magrow" id="magrow">
+      <span>الأخفت:</span>
+      <input id="mag" type="range" min="-1.5" max="6.5" step="0.1" value="6.5"/>
+      <span id="magval">القدر ٦٫٥</span>
+    </div>
+    <div id="count"></div>
+    <div id="list"></div>
+  </aside>
+
+  <div id="map">
+    <div id="aladin-lite-div"></div>
+    <div class="loading" id="load"><div class="spin"></div><div>يجري تحميل السماء الحقيقية…</div></div>
+    <div id="ctl">
+      <select id="survey" title="طبقة الصور">
+        <option value="auto">تلقائي · سلس ↔ تفصيلي</option>
+        <option value="P/DSS2/color">DSS2 · ملوّن بصري</option>
+        <option value="P/DSS2/red">DSS2 · أحمر عميق</option>
+        <option value="P/2MASS/color">2MASS · تحت حمراء قريبة</option>
+        <option value="P/allWISE/color">AllWISE · تحت حمراء متوسطة</option>
+        <option value="P/Mellinger/color">ملينجر · مجال واسع</option>
+      </select>
+      <button id="lines">✦ خطوط الكوكبات</button>
+      <button id="rand">🎲 جِرمٌ عشوائيّ</button>
+      <button id="wide">⤢ السماء كاملة</button>
+      <button id="full">⛶ ملء الشاشة</button>
+    </div>
+    <div class="kbd"><b>الأسهم</b> تنقّل · <b>R</b> عشوائي · <b>Esc</b> إغلاق</div>
+    <div id="card">
+      <div class="nav"><button id="prev" title="السابق">‹</button><button id="next" title="التالي">›</button></div>
+      <span class="close" id="x">×</span>
+      <div class="top"><span class="dot" id="cDot"></span><div><h2 id="cName"></h2><div class="desig" id="cDesig"></div></div></div>
+      <div class="grid">
+        <div><span>المسافة</span><b class="num" id="cDist"></b></div>
+        <div><span>القدر الظاهري</span><b class="num" id="cMag"></b></div>
+        <div><span id="lbl3">النوع الطيفي</span><b id="cSpec"></b></div>
+        <div><span>الكوكبة</span><b id="cCon"></b></div>
+        <div><span>المطلع المستقيم</span><b class="num" id="cRA"></b></div>
+        <div><span>الميل</span><b class="num" id="cDec"></b></div>
+      </div>
+      <p class="desc" id="cDesc"></p>
+      <div class="hint" id="cHint"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
+<script>
+// ===== النجوم اللامعة (إحداثيات J2000 بالدرجات) =====
+const STARS = [
+ {n:"الشِّعْرى اليمانية",b:"α CMa",ra:101.2872,de:-16.7161,m:-1.46,ly:8.6,s:"A1 V",c:"الكلب الأكبر",info:"ألمع نجم في سماء الأرض؛ نجمٌ أبيض مُزرقّ حارّ يبعد ٨٫٦ سنوات ضوئية فقط، يدور حوله رفيقٌ قزمٌ أبيض خافت يُلقَّب بـ«الجَرْو»."},
+ {n:"سُهَيْل",b:"α Car",ra:95.9879,de:-52.6957,m:-0.74,ly:310,s:"A9 II",c:"القاعدة",info:"ثاني ألمع نجوم الليل، عملاقٌ أبيض شديد السطوع تتّخذه المركبات الفضائية مرجعًا للملاحة لثباته."},
+ {n:"رِجْل القنطورس",b:"α Cen",ra:219.9021,de:-60.8340,m:-0.27,ly:4.4,s:"G2 V",c:"القنطورس",info:"أقرب نظام نجمي إلى الشمس؛ نجمٌ شبيه بالشمس يضمّ نظامه النجمَ بروكسيما قنطورس والكوكب الأرضيّ بروكسيما ب."},
+ {n:"السِّماك الرامِح",b:"α Boo",ra:213.9153,de:19.1825,m:-0.05,ly:37,s:"K0 III",c:"العوّاء",info:"عملاقٌ أحمر-برتقالي، ألمع نجوم نصف الكرة الشمالي، ينطلق عبر المجرّة أسرع بكثير من النجوم المحيطة به."},
+ {n:"النَّسْر الواقع",b:"α Lyr",ra:279.2347,de:38.7837,m:0.03,ly:25,s:"A0 V",c:"الشَّلْياق",info:"كان نجمًا قطبيًّا للشمال (وسيعود كذلك بعد نحو ١٢ ألف سنة)، وطالما اتُّخذ معيارًا أساسيًّا لقياس لمعان النجوم، ويحيط به قرصٌ من الغبار."},
+ {n:"العَيُّوق",b:"α Aur",ra:79.1723,de:45.9980,m:0.08,ly:43,s:"G3 III",c:"مُمسِك الأعنّة",info:"في الحقيقة نجمان عملاقان أصفران يدوران في مدارٍ ضيّق — وهو أسطع منائر سماء الشتاء الشمالية."},
+ {n:"رِجْل الجبّار",b:"β Ori",ra:78.6345,de:-8.2017,m:0.13,ly:860,s:"B8 Ia",c:"الجبّار",info:"عملاقٌ عملاق أزرق يبعد نحو ٨٦٠ سنة ضوئية، يفوق سطوعه الشمس بعشرات الآلاف من المرّات، ويمثّل قدم الجبّار اللامعة."},
+ {n:"الشِّعْرى الشامية",b:"α CMi",ra:114.8255,de:5.2250,m:0.34,ly:11.5,s:"F5 IV",c:"الكلب الأصغر",info:"نجمٌ أبيض قريب يرافقه قزمٌ أبيض. يكوّن مع الشِّعرى اليمانية وإبط الجوزاء مثلّث الشتاء."},
+ {n:"مَنْكِب الجوزاء",b:"α Ori",ra:88.7929,de:7.4071,m:0.50,ly:700,s:"M1 Ia",c:"الجبّار",info:"عملاقٌ أحمر هائل يقترب من نهاية حياته. خَفَت لمعانه بشكلٍ لافت عامَي ٢٠١٩–٢٠٢٠، وسينفجر يومًا ما مُستعرًا أعظم."},
+ {n:"آخِر النهر",b:"α Eri",ra:24.4285,de:-57.2368,m:0.46,ly:139,s:"B6 V",c:"النهر",info:"نجمٌ أزرق يدور حول نفسه بسرعةٍ فائقة حتى تفلطح إلى شكلٍ بيضويّ. يقع عند نهاية نهر النهر السماوي."},
+ {n:"حَضارِ",b:"β Cen",ra:210.9559,de:-60.3730,m:0.61,ly:390,s:"B1 III",c:"القنطورس",info:"نظامٌ ثلاثيّ من عمالقةٍ زُرقٍ حارّة. يشكّل مع رِجْل القنطورس «المؤشّرَين» اللذين يدلّان على الصليب الجنوبي."},
+ {n:"النَّسْر الطائر",b:"α Aql",ra:297.6958,de:8.8683,m:0.77,ly:17,s:"A7 V",c:"العُقاب",info:"من أقرب النجوم الساطعة، يدور حول نفسه بسرعةٍ هائلة — مرّةً كل ٩ ساعات تقريبًا — حتى ينتفخ عند خطّ استوائه."},
+ {n:"نجم الصليب الأوّل",b:"α Cru",ra:186.6496,de:-63.0991,m:0.77,ly:320,s:"B0.5 IV",c:"الصليب الجنوبي",info:"ألمع نجوم الصليب الجنوبي، نظامٌ نجميّ متعدّد من نجومٍ زرقاء حارّة."},
+ {n:"الدَّبَران",b:"α Tau",ra:68.9802,de:16.5093,m:0.85,ly:65,s:"K5 III",c:"الثور",info:"العملاق البرتقالي «عين الثور»، يظهر بين نجوم عنقود القلائص رغم أنه يقع أمامه بكثير."},
+ {n:"قَلْب العقرب",b:"α Sco",ra:247.3519,de:-26.4320,m:0.96,ly:550,s:"M1.5 Iab",c:"العقرب",info:"عملاقٌ أحمر هائل، «قلب العقرب». يعني اسمه اللاتيني «منافس المرّيخ» لتشابه لونه الأحمر مع المرّيخ."},
+ {n:"السِّماك الأعزَل",b:"α Vir",ra:201.2983,de:-11.1613,m:0.97,ly:250,s:"B1 III",c:"العذراء",info:"زوجٌ من نجمين أزرقين حارّين يدوران حول بعضهما كل أربعة أيام — ألمع نجوم العذراء."},
+ {n:"رأس التوأم المؤخَّر",b:"β Gem",ra:116.3289,de:28.0262,m:1.14,ly:34,s:"K0 III",c:"التوأمان",info:"أقرب نجمٍ عملاق إلى الشمس. يدور حوله كوكبٌ بحجم المشتري يُدعى ثيستياس (بولكس ب) — مثالٌ مرجعيّ لكوكبٍ يدور حول نجمٍ عملاق متطوّر."},
+ {n:"فَم الحوت",b:"α PsA",ra:344.4127,de:-29.6222,m:1.16,ly:25,s:"A3 V",c:"الحوت الجنوبي",info:"نجمٌ فتيّ يحيط به قرص حُطامٍ حادّ الحوافّ. يُلقَّب غالبًا بـ«نجم الخريف الوحيد»."},
+ {n:"ذَنَب الدجاجة",b:"α Cyg",ra:310.3580,de:45.2803,m:1.25,ly:1400,s:"A2 Ia",c:"الدجاجة",info:"عملاقٌ فائق السطوع وبعيدٌ جدًّا، يمثّل ذنب الدجاجة وأحد أركان مثلّث الصيف."},
+ {n:"نجم الصليب الثاني",b:"β Cru",ra:191.9303,de:-59.6888,m:1.25,ly:280,s:"B0.5 III",c:"الصليب الجنوبي",info:"عملاقٌ أزرق ملتهب في الصليب الجنوبي — من أحرّ النجوم المرئية بالعين المجرّدة."},
+ {n:"قَلْب الأسد",b:"α Leo",ra:152.0929,de:11.9672,m:1.35,ly:79,s:"B8 IV",c:"الأسد",info:"«قلب الأسد»، نجمٌ أبيض مُزرقّ سريع الدوران حتى تفلطح عند قطبيه."},
+ {n:"العَذارى",b:"ε CMa",ra:104.6565,de:-28.9720,m:1.50,ly:430,s:"B2 II",c:"الكلب الأكبر",info:"من أقوى مصادر الأشعة فوق البنفسجية في السماء. قبل نحو ٤٫٧ مليون سنة مرّ قريبًا من الشمس وكان أسطع بكثير ممّا عليه الشِّعرى اليوم."},
+ {n:"رأس التوأم المقدَّم",b:"α Gem",ra:113.6495,de:31.8883,m:1.57,ly:51,s:"A1 V",c:"التوأمان",info:"نظامٌ مذهل من ستّة نجومٍ يبدو للعين نقطة ضوءٍ واحدة — أحد توأمَي الجوزاء."},
+ {n:"الشَّوْلة",b:"λ Sco",ra:263.4022,de:-37.1038,m:1.62,ly:570,s:"B2 IV",c:"العقرب",info:"«الشَّوْلة» عند طرف ذيل العقرب، نظامٌ نجميّ متعدّد من نجومٍ زرقاء حارّة."},
+ {n:"نجم الصليب الثالث",b:"γ Cru",ra:187.7915,de:-57.1133,m:1.63,ly:88,s:"M3.5 III",c:"الصليب الجنوبي",info:"العملاق الأحمر الذي يتوّج قمّة الصليب الجنوبي، وأقرب عملاقٍ أحمر إلى الشمس."},
+ {n:"النَّجِيد",b:"γ Ori",ra:81.2828,de:6.3497,m:1.64,ly:250,s:"B2 III",c:"الجبّار",info:"«النجمة المحاربة»، عملاقٌ أزرق حارّ يمثّل كتف الجبّار الأيسر."},
+ {n:"النَّطْح",b:"β Tau",ra:81.5730,de:28.6075,m:1.65,ly:130,s:"B7 III",c:"الثور",info:"يقع على حدّ كوكبتَي الثور ومُمسِك الأعنّة، ويمثّل طرف قرن الثور الشمالي."},
+ {n:"الكَنْز",b:"β Car",ra:138.2999,de:-69.7172,m:1.69,ly:110,s:"A2 IV",c:"القاعدة",info:"نجمٌ أبيض مُزرقّ في قاعدة سفينة القاعدة، قريبٌ من القطب السماوي الجنوبي."},
+ {n:"النِّظام",b:"ε Ori",ra:84.0534,de:-1.2019,m:1.69,ly:2000,s:"B0 Ia",c:"الجبّار",info:"النجم الأوسط والأكثر سطوعًا في نطاق الجبّار — عملاقٌ أزرق لامع وبعيد."},
+ {n:"النِّطاق",b:"ζ Ori",ra:85.1897,de:-1.9426,m:1.77,ly:1260,s:"O9.5 Ib",c:"الجبّار",info:"النجم الشرقي في نطاق الجبّار. يجاوره سديما رأس الحصان واللهب الشهيران."},
+ {n:"الجَوْن",b:"ε UMa",ra:193.5073,de:55.9598,m:1.76,ly:81,s:"A1 III",c:"الدُّبّ الأكبر",info:"ألمع نجوم الدُّبّ الأكبر، نجمٌ كيميائيّ غريب يتغيّر تركيب سطحه مع دورانه."},
+ {n:"الدُّبّ (الظَّهْر)",b:"α UMa",ra:165.9320,de:61.7510,m:1.79,ly:124,s:"K0 III",c:"الدُّبّ الأكبر",info:"أحد «النجمَين الدليلَين» في كأس الدُّبّ الأكبر اللذين يستقيمان للإشارة إلى النجم القطبي."},
+ {n:"المِرفَق",b:"α Per",ra:51.0807,de:49.8612,m:1.79,ly:510,s:"F5 Ib",c:"برشاوش",info:"ألمع نجوم برشاوش، عملاقٌ أصفر لامع يقع داخل عنقودٍ نجميّ متناثر."},
+ {n:"الوَزْن",b:"δ CMa",ra:107.0978,de:-26.3932,m:1.83,ly:1600,s:"F8 Ia",c:"الكلب الأكبر",info:"عملاقٌ أصفر-أبيض ضخمٌ لدرجة أنه لو وُضع مكان الشمس لكاد يبتلع مدار الأرض."},
+ {n:"قَوس الجنوب",b:"ε Sgr",ra:276.0430,de:-34.3846,m:1.85,ly:143,s:"B9.5 III",c:"الرامي",info:"ألمع نجوم الرامي، يمثّل قاعدة قوس الرامي المشدود."},
+ {n:"أفيور",b:"ε Car",ra:125.6285,de:-59.5095,m:1.86,ly:630,s:"K3 III",c:"القاعدة",info:"زوجٌ نجميّ عملاق في قاعدة سفينة القاعدة، يشكّل أحد أركان الصليب الكاذب."},
+ {n:"القائد",b:"η UMa",ra:206.8852,de:49.3133,m:1.86,ly:100,s:"B3 V",c:"الدُّبّ الأكبر",info:"النجم الأزرق الحارّ عند طرف مقبض الدُّبّ الأكبر."},
+ {n:"سَرجاس",b:"θ Sco",ra:264.3297,de:-42.9978,m:1.86,ly:270,s:"F1 II",c:"العقرب",info:"عملاقٌ ساطع يتألّق في ذيل العقرب."},
+ {n:"مَنْكِب ذي العِنان",b:"β Aur",ra:89.8822,de:44.9474,m:1.90,ly:81,s:"A1 IV",c:"مُمسِك الأعنّة",info:"نجمٌ ثنائيّ كسوفيّ في مُمسِك الأعنّة يخفت ضوؤه دوريًّا حين يمرّ أحد نجميه أمام الآخر."},
+ {n:"أتريا",b:"α TrA",ra:252.1662,de:-69.0277,m:1.91,ly:390,s:"K2 II",c:"المثلّث الجنوبي",info:"عملاقٌ برتقالي، ألمع نجوم المثلّث الجنوبي الصغير."},
+ {n:"الهَنْعَة",b:"γ Gem",ra:99.4279,de:16.3993,m:1.93,ly:109,s:"A0 IV",c:"التوأمان",info:"نجمٌ أبيض مُزرقّ تحت-عملاق يمثّل قدم أحد توأمَي الجوزاء."},
+ {n:"الطاووس",b:"α Pav",ra:306.4119,de:-56.7351,m:1.94,ly:180,s:"B2 IV",c:"الطاووس",info:"النجم الرئيس في كوكبة الطاووس، نظامٌ متعدّد من نجومٍ زرقاء حارّة في سماء الجنوب."},
+ {n:"النجم القطبي",b:"α UMi",ra:37.9545,de:89.2641,m:1.98,ly:433,s:"F7 Ib",c:"الدُّبّ الأصغر",info:"«النجم القطبي»، يقع فوق قطب الأرض الشمالي تقريبًا. وهو نجمٌ متغيّر قيفاوي نابض يكاد لا يتحرّك بينما تدور السماء حوله."},
+ {n:"المِرزَم",b:"β CMa",ra:95.6745,de:-17.9559,m:1.98,ly:500,s:"B1 II",c:"الكلب الأكبر",info:"عملاقٌ أزرق بجوار الشِّعرى يعني اسمه «المُعلِن»، لأنه يشرق قُبيل ظهور الشِّعرى."},
+ {n:"الفَرْد",b:"α Hya",ra:141.8968,de:-8.6586,m:1.98,ly:177,s:"K3 III",c:"الشُّجاع",info:"«المنفرد»، عملاقٌ برتقالي وحيد يبرز في كوكبة الشُّجاع الباهتة الممتدّة."},
+ {n:"رأس الحَمَل",b:"α Ari",ra:31.7934,de:23.4624,m:2.00,ly:66,s:"K2 III",c:"الحَمَل",info:"العملاق البرتقالي الرئيس في الحَمَل، وقد كان قديمًا يحدّد موضع الاعتدال الربيعي."},
+ {n:"الجَبْهَة",b:"γ Leo",ra:154.9930,de:19.8415,m:2.08,ly:130,s:"K1 III",c:"الأسد",info:"ثنائيّ تلسكوبيّ بديع من نجمين عملاقين ذهبيين، يقع في منجل الأسد."},
+ {n:"الضِّفدع الثاني",b:"β Cet",ra:10.8973,de:-17.9866,m:2.04,ly:96,s:"K0 III",c:"قَيْطُس",info:"عملاقٌ برتقالي، ألمع نجوم قيطس."},
+ {n:"المِنطقة",b:"δ Ori",ra:83.0016,de:-0.2991,m:2.23,ly:1200,s:"O9.5 II",c:"الجبّار",info:"النجم الغربيّ في نطاق الجبّار، نظامٌ متعدّد يُكمل حزام الجبّار الثلاثيّ الشهير مع النِّظام والنِّطاق."},
+ {n:"السَّيف",b:"κ Ori",ra:86.9391,de:-9.6696,m:2.07,ly:650,s:"B0.5 Ia",c:"الجبّار",info:"عملاقٌ أزرق فائق يمثّل قدم الجبّار اليمنى، وأحد أركان مربّع الجبّار اللامع."},
+ {n:"العَنَاق",b:"ζ UMa",ra:200.9814,de:54.9254,m:2.04,ly:83,s:"A2 V",c:"الدُّبّ الأكبر",info:"نجمٌ ثنائيّ شهير في مقبض الدُّبّ الأكبر، يجاوره نجم السُّها، وكان اختبارًا قديمًا لحدّة البصر."},
+ {n:"السُّها",b:"80 UMa",ra:201.3062,de:54.9879,m:3.99,ly:82,s:"A5 V",c:"الدُّبّ الأكبر",info:"نجمٌ خافت بجوار العَنَاق، اتّخذه العرب قديمًا اختبارًا لحدّة البصر بالعين المجرّدة."},
+ {n:"رأس الغُول",b:"β Per",ra:47.0422,de:40.9557,m:2.12,ly:90,s:"B8 V",c:"برشاوش",info:"«نجم الشيطان»، ثنائيّ كسوفيّ شهير يخفت ضوؤه بوضوح كل نحو يومين وثُلث حين يحجب أحد نجميه الآخر."},
+ {n:"مِنقار الدجاجة",b:"β Cyg",ra:292.6803,de:27.9597,m:3.05,ly:430,s:"K3 II",c:"الدجاجة",info:"من أجمل النجوم الثنائية في المنظار، يتباين فيه نجمٌ ذهبيّ ساطع مع رفيقٍ أزرق."},
+ {n:"ذَنَب الأسد",b:"β Leo",ra:177.2649,de:14.5721,m:2.11,ly:36,s:"A3 V",c:"الأسد",info:"نجمٌ أبيض فتيّ سريع الدوران يمثّل ذيل الأسد."},
+ {n:"نيِّر الفَكّة",b:"α CrB",ra:233.6717,de:26.7147,m:2.22,ly:75,s:"A0 V",c:"الإكليل الشمالي",info:"ألمع نجوم الإكليل الشمالي، ثنائيّ كسوفيّ يمثّل جوهرة التاج."},
+ {n:"رأس الحَوّاء",b:"α Oph",ra:263.7339,de:12.5601,m:2.08,ly:49,s:"A5 III",c:"الحَوّاء",info:"ألمع نجوم الحَوّاء (حامل الحيّة)، نجمٌ أبيض سريع الدوران حتى تفلطح قليلًا."},
+ {n:"رأس التِّنِّين",b:"γ Dra",ra:269.1515,de:51.4889,m:2.36,ly:154,s:"K5 III",c:"التِّنِّين",info:"ألمع نجوم التِّنِّين، عملاقٌ برتقالي يمرّ قرب سَمت بعض المدن الشمالية."},
+ {n:"الذُّؤابة (ثوبان)",b:"α Dra",ra:211.0973,de:64.3758,m:3.65,ly:300,s:"A0 III",c:"التِّنِّين",info:"كان النجم القطبيّ لبُناة الأهرام قبل نحو ٥٠٠٠ سنة، قبل أن يزيحه ترنّح محور الأرض."},
+ {n:"صدر الدجاجة",b:"γ Cyg",ra:305.5571,de:40.2567,m:2.23,ly:1800,s:"F8 Ib",c:"الدجاجة",info:"عملاقٌ أصفر فائق في مركز صليب الدجاجة، يكتنفه سديمٌ واسع من الغاز المتوهّج."},
+ {n:"النيِّر (ألنير)",b:"α Gru",ra:332.0583,de:-46.9610,m:1.74,ly:101,s:"B6 V",c:"الكُركيّ",info:"ألمع نجوم الكُركيّ، نجمٌ أزرق ساطع في سماء الجنوب."},
+ {n:"سُرّة الفرس",b:"α And",ra:2.0969,de:29.0904,m:2.06,ly:97,s:"B8 IV",c:"المرأة المسلسلة",info:"نجمٌ يصل المرأة المسلسلة بمربّع الفرس الأعظم، ويمثّل رأسها."},
+ {n:"مِراق",b:"β And",ra:17.4330,de:35.6206,m:2.05,ly:200,s:"M0 III",c:"المرأة المسلسلة",info:"عملاقٌ أحمر يُهتدى به للعثور على مجرّة المرأة المسلسلة القريبة منه."},
+ {n:"عَناق الأرض",b:"γ And",ra:30.9748,de:42.3297,m:2.10,ly:350,s:"K3 II",c:"المرأة المسلسلة",info:"نجمٌ ثنائيّ خلّاب يتباين فيه عملاقٌ ذهبيّ مع رفيقٍ أزرق."},
+ {n:"صدر ذات الكرسي",b:"α Cas",ra:10.1268,de:56.5373,m:2.24,ly:228,s:"K0 III",c:"ذات الكرسي",info:"ألمع نجوم ذات الكرسي، عملاقٌ برتقالي في أحد طرفَي شكل الحرف W."},
+ {n:"الكفّ الخضيب",b:"β Cas",ra:2.2925,de:59.1498,m:2.27,ly:54,s:"F2 III",c:"ذات الكرسي",info:"نجمٌ أبيض-مصفرّ نابض، أحد أطراف حرف W في ذات الكرسي."},
+ {n:"مَركب الفرس",b:"α Peg",ra:346.1903,de:15.2053,m:2.48,ly:133,s:"B9 III",c:"الفرس الأعظم",info:"ألمع نجوم الفرس الأعظم، أحد أركان مربّع الفرس الشهير."},
+ {n:"مَنكِب الفرس",b:"β Peg",ra:345.9437,de:28.0828,m:2.42,ly:196,s:"M2 II",c:"الفرس الأعظم",info:"عملاقٌ أحمر متغيّر، يمثّل أحد أركان مربّع الفرس الأعظم."},
+ {n:"أنف الفرس",b:"ε Peg",ra:326.0465,de:9.8750,m:2.40,ly:690,s:"K2 Ib",c:"الفرس الأعظم",info:"عملاقٌ برتقالي فائق يمثّل أنف الفرس، أبرز نجوم رأسه."},
+ {n:"نُنكي",b:"σ Sgr",ra:283.8164,de:-26.2967,m:2.05,ly:228,s:"B2 V",c:"الرامي",info:"ثاني ألمع نجوم الرامي، نجمٌ أزرق ساطع في «مقبض إبريق الشاي»."},
+ {n:"ناوس",b:"ζ Pup",ra:120.8961,de:-40.0032,m:2.21,ly:1080,s:"O4 If",c:"المؤخّرة",info:"من أحرّ النجوم وأكثرها سطوعًا، عملاقٌ أزرق فائق يطلق رياحًا نجمية جبّارة."},
+ {n:"غاما الشِّراع",b:"γ Vel",ra:122.3833,de:-47.3367,m:1.78,ly:1100,s:"WC8+O",c:"الشِّراع",info:"«نجم وولف-رايي» الساطع، نظامٌ ضخم من أحرّ النجوم وأكثرها كتلةً وعنفًا."},
+ {n:"سُهيل المُحلِف",b:"λ Vel",ra:136.9990,de:-43.4326,m:2.21,ly:545,s:"K4 Ib",c:"الشِّراع",info:"عملاقٌ برتقالي فائق في شِراع سفينة الجوزاء القديمة."},
+ {n:"رأس الجاثي",b:"α Her",ra:258.6620,de:14.3903,m:3.35,ly:360,s:"M5 Ib",c:"الجاثي",info:"عملاقٌ أحمر هائل متغيّر، ثنائيّ بديع يتباين فيه نجمٌ أحمر مع رفيقٍ مُخضرّ."},
+ {n:"٥١ الفرس",b:"51 Peg",ra:344.3665,de:20.7689,m:5.49,ly:50,s:"G2.5 IV",c:"الفرس الأعظم",info:"أوّل نجمٍ شبيه بالشمس يُكتشف حوله كوكبٌ خارجيّ (٥١ الفرس ب) عام ١٩٩٥، وهو إنجازٌ نال جائزة نوبل."}
+];
+
+// ===== المجرّات والسُّدُم والعناقيد (إحداثيات J2000) — fz: مجال التكبير عند الوصول =====
+const DSO = [
+ {n:"مجرّة المرأة المسلسلة",b:"M31 · NGC 224",ra:10.6847,de:41.2687,m:3.4,ly:2.5e6,t:"مجرّة حلزونية",c:"المرأة المسلسلة",fz:3,info:"أقرب مجرّة حلزونية كبيرة، وأبعد جِرمٍ يُرى بالعين المجرّدة. تتّجه نحونا وستندمج مع درب التبّانة بعد نحو ٤٫٥ مليار سنة."},
+ {n:"مجرّة المثلّث",b:"M33 · NGC 598",ra:23.4621,de:30.6600,m:5.7,ly:2.7e6,t:"مجرّة حلزونية",c:"المثلّث",fz:2.5,info:"ثالث أكبر مجرّات مجموعتنا المحلّية — مجرّة حلزونية مواجِهة، تُرى بصعوبة للعيون الحادّة تحت سماءٍ مظلمة حقًّا."},
+ {n:"سحابة ماجلان الكبرى",b:"LMC",ra:80.8942,de:-69.7561,m:0.9,ly:1.6e5,t:"مجرّة قزمة",c:"أبو سيف / الطاولة",fz:9,info:"مجرّة قزمة تابعة لدرب التبّانة، تحتضن سديم الرتيلاء، أنشط منطقة لتكوّن النجوم معروفة في جوارنا."},
+ {n:"سحابة ماجلان الصغرى",b:"SMC · NGC 292",ra:13.1867,de:-72.8286,m:2.7,ly:2.0e5,t:"مجرّة قزمة",c:"الطوقان",fz:5,info:"مجرّة قزمة مرافقة قرب سحابة ماجلان الكبرى. كشفت دراسة نجومها القيفاوية الطريقة التي يقيس بها الفلكيون المسافات الكونية."},
+ {n:"مجرّة الدوّامة",b:"M51 · NGC 5194",ra:202.4696,de:47.1952,m:8.4,ly:23e6,t:"مجرّة حلزونية",c:"كلاب الصيد",fz:1.2,info:"مجرّة حلزونية «كبرى التصميم» نموذجية، أذرعها بديعة الوضوح وهي تتفاعل مع مجرّة مرافقة صغيرة."},
+ {n:"مجرّة القبّعة",b:"M104 · NGC 4594",ra:189.9976,de:-11.6231,m:8.0,ly:29e6,t:"مجرّة حلزونية",c:"العذراء",fz:1.2,info:"مجرّة تُرى من حافتها، ذات انتفاخٍ مركزيّ متوهّج يلتفّ حوله حزام غبارٍ داكن يمنحها هيئة القبّعة."},
+ {n:"مجرّة الدوّارة",b:"M101 · NGC 5457",ra:210.8024,de:54.3488,m:7.9,ly:21e6,t:"مجرّة حلزونية",c:"الدُّبّ الأكبر",fz:1.5,info:"مجرّة حلزونية ضخمة مواجِهة، أعرض من درب التبّانة بنحو ٧٠٪، تتوهّج بمناطق ولادة النجوم على امتداد أذرعها."},
+ {n:"مجرّة بودي",b:"M81 · NGC 3031",ra:148.8882,de:69.0653,m:6.9,ly:12e6,t:"مجرّة حلزونية",c:"الدُّبّ الأكبر",fz:1.5,info:"مجرّة حلزونية لامعة كبرى التصميم في الدُّبّ الأكبر، تظهر في الحقل نفسه إلى جوار مجرّة السيجار."},
+ {n:"مجرّة السيجار",b:"M82 · NGC 3034",ra:148.9685,de:69.6797,m:8.4,ly:12e6,t:"مجرّة وليدة النجوم",c:"الدُّبّ الأكبر",fz:1.2,info:"مجرّة وليدة نجوم تتفجّر فيها ولادة النجوم، أشعل نشاطها لقاءٌ جاذبيّ مع جارتها بودي."},
+ {n:"القنطورس أ",b:"NGC 5128",ra:201.3651,de:-43.0191,m:6.8,ly:13e6,t:"مجرّة عدسية",c:"القنطورس",fz:1.2,info:"مجرّة غريبة يشقّها حزام غبارٍ مهيب، يغذّيها ثقبٌ أسود هائل يطلق نفّاثاتٍ ضخمة من الطاقة الراديوية."},
+ {n:"مجرّة النحّات",b:"NGC 253",ra:11.8880,de:-25.2882,m:7.1,ly:11e6,t:"مجرّة حلزونية",c:"النحّات",fz:1.5,info:"مجرّة حلزونية وليدة نجوم ساطعة ومُغبرّة تُرى شبه حافّية — من ألمع المجرّات في كامل السماء."},
+ {n:"مجرّة العين السوداء",b:"M64 · NGC 4826",ra:194.1822,de:21.6831,m:8.5,ly:17e6,t:"مجرّة حلزونية",c:"ضفيرة برنيقة",fz:1.2,info:"سُمّيت بحزام الغبار الداكن أمام نواتها الساطعة. والغريب أنّ غازها الداخلي والخارجي يدوران في اتجاهين متعاكسين."},
+ {n:"سديم الجبّار",b:"M42 · NGC 1976",ra:83.8221,de:-5.3911,m:4.0,ly:1300,t:"سديم انبعاثي",c:"الجبّار",fz:1.5,info:"حضانة نجمية متوهّجة تُرى بالعين المجرّدة في سيف الجبّار، حيث تتشكّل الآن نجومٌ وأنظمة كوكبية جديدة."},
+ {n:"سديم القاعدة",b:"NGC 3372",ra:161.2650,de:-59.8669,m:1.0,ly:8500,t:"سديم انبعاثي",c:"القاعدة",fz:2.5,info:"سديمٌ هائل وباهر يضمّ العملاق غير المستقرّ إيتا القاعدة وأعمدة الغاز الشهيرة «الجبل الغامض»."},
+ {n:"سديم البحيرة",b:"M8 · NGC 6523",ra:270.9242,de:-24.3864,m:6.0,ly:4100,t:"سديم انبعاثي",c:"الرامي",fz:1.5,info:"سحابةٌ كبيرة ساطعة من الغاز المتوهّج تتخلّلها عناقيد نجمية فتيّة، تقع باتجاه مركز مجرّتنا في الرامي."},
+ {n:"السديم الثلاثي",b:"M20 · NGC 6514",ra:270.6258,de:-23.0303,m:6.3,ly:5200,t:"سديم انبعاثي",c:"الرامي",fz:1,info:"سديمٌ زاهي الألوان يقسمه الغبار الداكن إلى ثلاثة فصوص، يمزج بين انبعاثٍ ورديّ وضوءٍ انعكاسيّ أزرق."},
+ {n:"سديم النَّسر",b:"M16 · NGC 6611",ra:274.7000,de:-13.8067,m:6.0,ly:7000,t:"سديم انبعاثي",c:"الحيّة",fz:1,info:"موطن «أعمدة الخلق» الشهيرة التي صوّرها هابل — أعمدة هائلة من الغاز تُولد فيها النجوم."},
+ {n:"السديم الحلقي",b:"M57 · NGC 6720",ra:283.3963,de:33.0292,m:8.8,ly:2300,t:"سديم كوكبي",c:"الشَّلْياق",fz:0.6,info:"حلقةٌ دخانية متوهّجة نفثها نجمٌ شبيه بالشمس وهو يحتضر، ومن أحبّ السُّدُم الكوكبية إلى هواة التلسكوبات."},
+ {n:"سديم الدمبل",b:"M27 · NGC 6853",ra:299.9015,de:22.7211,m:7.5,ly:1200,t:"سديم كوكبي",c:"الثعلب",fz:0.8,info:"أول سديمٍ كوكبيّ يُكتشف على الإطلاق، ساعةٌ رمليّة من الغاز المتوهّج في كوكبة الثعلب الصغيرة."},
+ {n:"السديم الحلزوني",b:"NGC 7293",ra:337.4108,de:-20.8372,m:7.6,ly:650,t:"سديم كوكبي",c:"الدَّلْو",fz:1,info:"من أقرب السُّدُم الكوكبية إلى الأرض، أكسبه شكله الحلقيّ الشبيه بالعين لقب «عين الله»."},
+ {n:"سديم السرطان",b:"M1 · NGC 1952",ra:83.6332,de:22.0145,m:8.4,ly:6500,t:"بقايا مستعر أعظم",c:"الثور",fz:0.8,info:"حطامٌ متمدّد لمستعرٍ أعظم سجّل الفلكيون الصينيون انفجاره عام ١٠٥٤م، وفي قلبه نجمٌ نيوتروني سريع الدوران."},
+ {n:"الثُّرَيّا",b:"M45 · الأخوات السبع",ra:56.8711,de:24.1053,m:1.6,ly:444,t:"عنقود مفتوح",c:"الثور",fz:3,info:"«الثُّرَيّا»، عنقودٌ فتيّ مبهر من نجومٍ زرقاء حارّة يكتنفه سديمٌ انعكاسيّ أزرق رقيق."},
+ {n:"الحَيادِس (القلائص)",b:"Caldwell 41",ra:66.7500,de:15.8700,m:0.5,ly:153,t:"عنقود مفتوح",c:"الثور",fz:7,info:"أقرب عنقودٍ نجميّ مفتوح إلى الشمس، تشكّل ألمع نجومه وجه الثور على هيئة الحرف V."},
+ {n:"عنقود خليّة النحل",b:"M44 · المِعْلَف",ra:130.1000,de:19.6700,m:3.7,ly:577,t:"عنقود مفتوح",c:"السرطان",fz:3,info:"سربٌ لامع من النجوم معروفٌ منذ القِدَم، يُرى بسهولة لطخةً ضبابية في قلب السرطان."},
+ {n:"العنقود المزدوج",b:"NGC 869 / 884",ra:34.7400,de:57.1400,m:3.8,ly:7500,t:"عنقود مفتوح",c:"برشاوش",fz:2,info:"زوجٌ خلّاب من عنقودين نجميين مفتوحين متجاورين في برشاوش — تحفةٌ بالمنظار."},
+ {n:"عنقود الجاثي",b:"M13 · NGC 6205",ra:250.4235,de:36.4603,m:5.8,ly:22000,t:"عنقود كروي",c:"الجاثي",fz:0.8,info:"من أجمل العناقيد الكروية في السماء الشمالية، كرةٌ متلألئة من مئات الآلاف من النجوم القديمة."},
+ {n:"أوميغا القنطورس",b:"NGC 5139",ra:201.6968,de:-47.4795,m:3.7,ly:17000,t:"عنقود كروي",c:"القنطورس",fz:1.2,info:"أكبر وألمع عنقودٍ كروي يدور حول درب التبّانة، يكتظّ بنحو عشرة ملايين نجم."},
+ {n:"٤٧ الطوقان",b:"NGC 104",ra:6.0236,de:-72.0814,m:4.0,ly:13000,t:"عنقود كروي",c:"الطوقان",fz:1,info:"ثاني ألمع عنقودٍ كروي في السماء — كرةٌ كثيفة من النجوم القديمة قرب سحابة ماجلان الصغرى."}
+];
+
+// أشكال نجمية مشهورة (نقاط مرجعية إضافية لاكتمال الشكل)
+const FIGURES = [
+ [[88.7929,7.4071],[81.2828,6.3497]],
+ [[85.1897,-1.9426],[84.0534,-1.2019],[83.0016,-0.2991]],
+ [[81.2828,6.3497],[83.0016,-0.2991]],
+ [[88.7929,7.4071],[85.1897,-1.9426]],
+ [[78.6345,-8.2017],[83.0016,-0.2991]],
+ [[86.9391,-9.6696],[85.1897,-1.9426]],
+ [[78.6345,-8.2017],[86.9391,-9.6696]],
+ [[165.9320,61.7510],[165.4603,56.3825],[178.4577,53.6948],[183.8565,57.0326],[193.5073,55.9598],[200.9814,54.9254],[206.8852,49.3133]],
+ [[183.8565,57.0326],[165.9320,61.7510]],
+ [[186.6496,-63.0991],[187.7915,-57.1133]],
+ [[191.9303,-59.6888],[183.7863,-58.7489]],
+ [[279.2347,38.7837],[297.6958,8.8683],[310.3580,45.2803],[279.2347,38.7837]]
+];
+
+const AR_DIG="٠١٢٣٤٥٦٧٨٩";
+function ar(x){return String(x).replace(/[0-9]/g,d=>AR_DIG[+d]).replace(/\./g,"٫").replace(/-/g,"−");}
+function starColor(s){const t=(s||"")[0];
+  return {O:"#9bb4ff",B:"#aac4ff",A:"#dce6ff",F:"#fbf7ff",G:"#fff2c8",K:"#ffd29a",M:"#ff9a76"}[t]||"#ffffff";}
+function fmtDist(ly){let v,u;
+  if(ly>=1e6){v=ly/1e6;u="مليون سنة ضوئية";}
+  else if(ly>=1000){v=ly/1000;u="ألف سنة ضوئية";}
+  else {v=ly;u="سنة ضوئية";}
+  let s=Math.round(v*10)/10; s=Number.isInteger(s)?String(s):s.toFixed(1);
+  return ar(s)+" "+u;}
+function fmtMag(m,star){return ar((m>0?"+":"")+m.toFixed(star?2:1));}
+function fmtRA(deg){const h=deg/15,hh=Math.floor(h),mm=Math.floor((h-hh)*60),ss=Math.round((((h-hh)*60)-mm)*60);
+  return `${ar(hh)} سا ${ar(mm)} د ${ar(ss)} ث`;}
+function fmtDec(deg){const sign=deg<0?"−":"+";const a=Math.abs(deg),d=Math.floor(a),m=Math.round((a-d)*60);
+  return `${sign}${ar(d)}° ${ar(m)}′`;}
+
+let aladin, starCat, dsoCat, figOverlay, linesOn=false;
+let cat="star", current=null, view=[];
+let surveyMode="auto", activeSurvey="";
+const SMOOTH="P/Mellinger/color", DEEP="P/DSS2/color", FOV_SWITCH=18;
+const byName={};
+const $=id=>document.getElementById(id);
+
+A.init.then(()=>{
+  aladin = A.aladin('#aladin-lite-div',{
+    survey:SMOOTH, fov:120, projection:"AIT", cooFrame:"ICRSd",
+    showReticle:true, showZoomControl:true, showFullscreenControl:false,
+    showLayersControl:false, showGotoControl:false, showSimbadPointerControl:true,
+    showCooGrid:false, target:"0 +20"
+  });
+  $("load").style.display="none";
+
+  starCat = A.catalog({name:"النجوم", shape:"circle", sourceSize:8, color:"#ffe8a8",
+    displayLabel:true, labelColumn:"name", labelColor:"#fffbe8", labelFont:"600 14px Cairo, sans-serif"});
+  dsoCat = A.catalog({name:"المجرّات والسُّدُم", shape:"square", sourceSize:11, color:"#7ce6bf",
+    displayLabel:true, labelColumn:"name", labelColor:"#c6ffe9", labelFont:"600 14px Cairo, sans-serif"});
+  aladin.addCatalog(starCat); aladin.addCatalog(dsoCat);
+
+  STARS.forEach((s,i)=>{ byName[s.n]={kind:"star",i}; starCat.addSources([A.source(s.ra,s.de,{name:s.n})]); });
+  DSO.forEach((s,i)=>{ byName[s.n]={kind:"dso",i}; dsoCat.addSources([A.source(s.ra,s.de,{name:s.n})]); });
+
+  try{ aladin.on("objectClicked",o=>{ if(o&&o.data&&byName[o.data.name]){const r=byName[o.data.name]; goObj(r.kind,r.i);} }); }catch(e){}
+
+  try{
+    figOverlay = A.graphicOverlay({color:"#d8b06a", lineWidth:1.4});
+    aladin.addOverlay(figOverlay);
+    FIGURES.forEach(p=>figOverlay.add(A.polyline(p)));
+    try{ figOverlay.hide(); }catch(e){}
+  }catch(e){}
+
+  activeSurvey=SMOOTH;
+  buildList();
+  setInterval(autoSurvey, 500);
+});
+
+function autoSurvey(){
+  if(surveyMode!=="auto"||!aladin) return;
+  let fov; try{ fov=aladin.getFov()[0]; }catch(e){ return; }
+  const want = fov>FOV_SWITCH?SMOOTH:DEEP;
+  if(want!==activeSurvey){ activeSurvey=want; setSurvey(want); }
+}
+function setSurvey(id){ try{ aladin.setImageSurvey(id);}catch(e){ try{ aladin.setBaseImageLayer(id);}catch(e2){} } }
+function data(kind){ return kind==="dso"?DSO:STARS; }
+
+function buildList(){
+  const arrSrc=data(cat), f=$("q").value.trim(), sort=$("sort").value, maxMag=parseFloat($("mag").value);
+  $("magrow").style.display = cat==="star" ? "flex" : "none";
+  let arr=arrSrc.map((s,i)=>({s,i}))
+    .filter(({s})=> cat!=="star" || s.m<=maxMag+1e-9)
+    .filter(({s})=>!f || s.n.includes(f)||s.c.includes(f)||(s.t||"").includes(f)||(s.b||"").toLowerCase().includes(f.toLowerCase()));
+  arr.sort((a,b)=> sort==="mag"? a.s.m-b.s.m : sort==="dist"? a.s.ly-b.s.ly : a.s.n.localeCompare(b.s.n,"ar"));
+  view=arr.map(o=>({kind:cat,i:o.i}));
+
+  const L=$("list"); L.innerHTML="";
+  arr.forEach(({s,i})=>{
+    const isStar=cat==="star", col=isStar?starColor(s.s):"#79c8aa";
+    const active=current&&current.kind===cat&&current.i===i;
+    const el=document.createElement("div");
+    el.className="item"+(active?" active":""); el.dataset.i=i;
+    el.innerHTML=`<span class="dot ${isStar?'':'sq'}" style="color:${col};background:${col}"></span>
+      <span class="nm">${s.n}</span><span class="bayer">${s.b.split(" ")[0]}</span>
+      <span class="mg">${fmtMag(s.m,isStar)}</span>`;
+    el.onclick=()=>goObj(cat,i);
+    L.appendChild(el);
+  });
+  $("count").textContent = `${ar(arr.length)} ${cat==="star"?"نجمًا معروضًا":"جِرمًا معروضًا"}`;
+}
+
+function goObj(kind,i){
+  const s=data(kind)[i]; current={kind,i};
+  if(kind!==cat) switchTab(kind); else markActive();
+  aladin.gotoRaDec(s.ra,s.de);
+  const target=s.fz||(kind==="star"?1.0:1.5);
+  let fov=Math.max(aladin.getFov()[0], target+40);
+  const anim=setInterval(()=>{ fov=fov-(fov-target)*0.25; aladin.setFov(fov);
+    if(fov-target<target*0.04){clearInterval(anim); aladin.setFov(target);} },28);
+
+  const isStar=kind==="star", col=isStar?starColor(s.s):"#79c8aa";
+  $("cDot").style.background=col; $("cDot").style.color=col; $("cDot").style.borderRadius=isStar?"50%":"3px";
+  $("cName").textContent=s.n; $("cDesig").textContent=s.b;
+  $("cDist").textContent=fmtDist(s.ly); $("cMag").textContent=fmtMag(s.m,isStar);
+  $("lbl3").textContent=isStar?"النوع الطيفي":"نوع الجِرم";
+  $("cSpec").textContent=isStar?s.s:s.t;
+  $("cCon").textContent=s.c; $("cRA").textContent=fmtRA(s.ra); $("cDec").textContent=fmtDec(s.de);
+  $("cDesc").textContent=s.info||"";
+  $("cHint").textContent="صورةٌ فلكية حقيقية لهذه المنطقة — مرّر للتكبير، واسحب للتنقّل.";
+  $("card").classList.add("show");
+  if(window.innerWidth<=820) $("side").classList.remove("open");
+}
+function markActive(){ document.querySelectorAll(".item").forEach(e=>
+  e.classList.toggle("active", current&&+e.dataset.i===current.i));
+  const a=document.querySelector(".item.active"); if(a) a.scrollIntoView({block:"nearest",behavior:"smooth"}); }
+function step(dir){ if(!view.length) return;
+  let pos=current?view.findIndex(v=>v.kind===current.kind&&v.i===current.i):-1;
+  pos=pos<0?0:(pos+dir+view.length)%view.length;
+  goObj(view[pos].kind, view[pos].i); }
+
+function switchTab(c){ cat=c; $("tabStar").classList.toggle("on",c==="star"); $("tabDso").classList.toggle("on",c==="dso");
+  buildList(); markActive(); }
+
+$("tabStar").onclick=()=>switchTab("star");
+$("tabDso").onclick=()=>switchTab("dso");
+$("q").addEventListener("input",buildList);
+$("sort").addEventListener("change",buildList);
+$("mag").addEventListener("input",()=>{ $("magval").textContent="القدر "+ar(parseFloat($("mag").value).toFixed(1)); buildList(); });
+$("survey").addEventListener("change",e=>{ const v=e.target.value;
+  if(v==="auto"){ surveyMode="auto"; activeSurvey=""; autoSurvey(); }
+  else { surveyMode=v; activeSurvey=v; setSurvey(v); } });
+$("x").onclick=()=>$("card").classList.remove("show");
+$("prev").onclick=()=>step(-1);
+$("next").onclick=()=>step(1);
+$("rand").onclick=()=>{ const pool=view.length?view:data(cat).map((_,i)=>({kind:cat,i}));
+  const p=pool[Math.floor(Math.random()*pool.length)]; goObj(p.kind,p.i); };
+$("wide").onclick=()=>{ aladin.gotoRaDec(0,20); aladin.setFov(120); $("card").classList.remove("show"); current=null; markActive(); };
+$("lines").onclick=()=>{ linesOn=!linesOn; try{ linesOn?figOverlay.show():figOverlay.hide(); }catch(e){}
+  $("lines").classList.toggle("on",linesOn); };
+$("full").onclick=()=>{ const el=document.documentElement;
+  if(!document.fullscreenElement){ el.requestFullscreen&&el.requestFullscreen(); } else { document.exitFullscreen&&document.exitFullscreen(); } };
+$("burger").onclick=()=>$("side").classList.toggle("open");
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT") return;
+  if(e.key==="ArrowLeft"){step(1);e.preventDefault();}
+  else if(e.key==="ArrowRight"){step(-1);e.preventDefault();}
+  else if(e.key==="Escape"){$("card").classList.remove("show");}
+  else if(e.key.toLowerCase()==="r"){$("rand").click();}
+});
+</script>
+</body>
+</html>
